@@ -1,0 +1,34 @@
+name: Terraform Apply
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: 1.0.0
+
+      - name: Terraform Init
+        run: terraform init
+        env:
+          TF_CLI_ARGS_init: "-reconfigure"
+          TF_REGISTRY_TOKEN: ${{ secrets.TF_API_TOKEN }}
+
+      - name: Terraform Plan
+        run: terraform plan
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
+        env:
+          TF_CLI_ARGS_init: "-reconfigure"
+          TF_REGISTRY_TOKEN: ${{ secrets.TF_API_TOKEN }}

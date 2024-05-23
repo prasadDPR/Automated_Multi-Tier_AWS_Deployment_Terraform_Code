@@ -1,4 +1,4 @@
-name: Terraform Apply
+name: Terraform Deployment
 
 on:
   push:
@@ -6,29 +6,43 @@ on:
       - main
 
 jobs:
-  terraform:
+  deploy:
+    name: Deploy Terraform
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout Repository
         uses: actions/checkout@v2
 
-      - name: Set up Terraform
+      - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
         with:
-          terraform_version: 1.0.0
+          terraform_version: 1.0.0  # Replace with your Terraform version
 
-      - name: Terraform Init
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1  # Replace with your AWS region
+
+      - name: Initialize Terraform
         run: terraform init
         env:
-          TF_CLI_ARGS_init: "-reconfigure"
-          TF_REGISTRY_TOKEN: ${{ secrets.TF_API_TOKEN }}
+          TF_API_TOKEN: ${{ secrets.TF_API_TOKEN }}
 
-      - name: Terraform Plan
-        run: terraform plan
-
-      - name: Terraform Apply
-        run: terraform apply -auto-approve
+      - name: Validate Terraform Configuration
+        run: terraform validate
         env:
-          TF_CLI_ARGS_init: "-reconfigure"
-          TF_REGISTRY_TOKEN: ${{ secrets.TF_API_TOKEN }}
+          TF_API_TOKEN: ${{ secrets.TF_API_TOKEN }}
+
+      - name: Plan Terraform Changes
+        run: terraform plan -out=tfplan
+        env:
+          TF_API_TOKEN: ${{ secrets.TF_API_TOKEN }}
+
+      - name: Apply Terraform Changes
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: terraform apply -auto-approve tfplan
+        env:
+          TF_API_TOKEN: ${{ secrets.TF_API_TOKEN }}

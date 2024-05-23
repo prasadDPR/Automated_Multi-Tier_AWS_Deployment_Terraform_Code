@@ -26,6 +26,11 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1  # Replace with your AWS region
 
+      - name: Print Environment Variables
+        run: printenv | grep TF_API_TOKEN
+        env:
+          TF_API_TOKEN: ${{ secrets.TF_API_TOKEN }}
+
       - name: Initialize Terraform
         run: terraform init
         env:

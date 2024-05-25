@@ -2,7 +2,7 @@ resource "aws_s3_bucket" "error_bucket" {
   bucket = "error-pages-scctf-bucket"
   tags = {
     Name = "s3-demo-bucket"
-   }
+  }
 }
 
 resource "aws_s3_bucket_public_access_block" "public_access_block" {
@@ -22,21 +22,20 @@ locals {
   }
 }
 
-
 resource "null_resource" "download_files" {
   for_each = local.files
 
   provisioner "local-exec" {
-    command = "curl -o ${each.key} ${each.value}"
+    command = "curl -o ${path.module}/downloaded/${each.key} ${each.value}"
   }
 }
 
-resource "aws_s3_bucket_object" "uploaded_files" {
+resource "aws_s3_object" "uploaded_files" {
   for_each = local.files
 
   bucket = aws_s3_bucket.error_bucket.bucket
   key    = each.key
-  source = "${path.cwd}/${each.key}"
+  source = "${path.module}/downloaded/${each.key}"
   
   content_type = lookup({
     "index.html"      = "text/html",
@@ -65,7 +64,6 @@ resource "aws_s3_bucket_policy" "public_access_policy" {
     ]
   })
 }
-
 
 resource "aws_s3_bucket_website_configuration" "example" {
   bucket = aws_s3_bucket.error_bucket.id

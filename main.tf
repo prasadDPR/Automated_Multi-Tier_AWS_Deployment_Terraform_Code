@@ -1,7 +1,7 @@
 terraform {
   backend "remote" {
     hostname     = "app.terraform.io"
-    organization = "aws-tfstate-file"
+    organization = "aws-statetf-org"
 
     workspaces {
       name = "cicd-aws-project"

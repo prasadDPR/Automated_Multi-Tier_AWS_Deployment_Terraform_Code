@@ -1,7 +1,6 @@
 provider "aws" {
   region = "us-east-1"
 
-  # Use environment variables for AWS credentials
-  access_key = var.aws_access_key
-  secret_key = var.aws_secret_key
+  aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 }

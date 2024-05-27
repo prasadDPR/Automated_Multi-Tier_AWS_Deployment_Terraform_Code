@@ -1,3 +1,7 @@
+provider "aws" {
+  region = "us-east-1"  # Update with your desired AWS region
+}
+
 resource "aws_s3_bucket" "error_bucket" {
   bucket = "error-pages-scctf-bucket"
   tags = {
@@ -22,12 +26,20 @@ locals {
   }
 }
 
+resource "null_resource" "create_download_directory" {
+  provisioner "local-exec" {
+    command = "mkdir -p ${path.module}/downloaded"
+  }
+}
+
 resource "null_resource" "download_files" {
   for_each = local.files
 
   provisioner "local-exec" {
     command = "curl -o ${path.module}/downloaded/${each.key} ${each.value}"
   }
+
+  depends_on = [null_resource.create_download_directory]
 }
 
 resource "aws_s3_object" "uploaded_files" {
@@ -86,8 +98,4 @@ resource "aws_s3_bucket_website_configuration" "example" {
       }
     }
   ])
-}
-
-locals {
-  s3_origin_id = "myS3Origin"
 }

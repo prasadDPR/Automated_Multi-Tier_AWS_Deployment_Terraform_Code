@@ -31,14 +31,26 @@ jobs:
           echo "credentials \"app.terraform.io\" { token = \"${{ secrets.TF_API_TOKEN }}\" }" > ~/.terraformrc
 
       - name: Initialize Terraform
-        run: terraform init
+        run: terraform init -input=false -no-color
+        env:
+          TF_API_TOKEN: ${{ secrets.TF_API_TOKEN }}
 
       - name: Validate Terraform Configuration
-        run: terraform validate
+        run: terraform validate -no-color
+        env:
+          TF_API_TOKEN: ${{ secrets.TF_API_TOKEN }}
 
       - name: Plan Terraform Changes
-        run: terraform plan
+        run: terraform plan -input=false -no-color
+        env:
+          TF_API_TOKEN: ${{ secrets.TF_API_TOKEN }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
       - name: Apply Terraform Changes
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-        run: terraform apply -auto-approve
+        run: terraform apply -input=false -auto-approve -no-color
+        env:
+          TF_API_TOKEN: ${{ secrets.TF_API_TOKEN }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}

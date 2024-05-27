@@ -1,7 +1,3 @@
-provider "aws" {
-  region = "us-east-1"  # Update with your desired AWS region
-}
-
 resource "aws_s3_bucket" "error_bucket" {
   bucket = "error-pages-scctf-bucket"
   tags = {

@@ -2,7 +2,7 @@ resource "aws_launch_configuration" "private_lc" {
   name            = "private-lc"
   image_id        = "ami-04e5276ebb8451442"
   instance_type   = "t2.micro"
-  key_name        = "aws_us"
+  key_name        = "aws_bank_key"
   security_groups = [aws_security_group.private-sg.id]
 
   user_data = <<-EOF

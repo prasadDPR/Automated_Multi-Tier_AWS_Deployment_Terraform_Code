@@ -13,11 +13,12 @@ resource "aws_launch_configuration" "private_lc" {
               sudo dnf install httpd -y
               sudo systemctl start httpd
               sudo systemctl enable httpd
+
+              # Install git
               sudo yum install -y git
 
-
               # Clone the GitHub repository
-              sudo git clone https://github.com/prasadDPR/website.git /var/www/html/
+              git clone https://github.com/prasadDPR/website.git /var/www/html/
 
               # Set permissions if needed
               sudo chown -R apache:apache /var/www/html/

@@ -7,30 +7,21 @@ resource "aws_launch_configuration" "private_lc" {
 
   user_data = <<-EOF
               #!/bin/bash
-              # Script to deploy a color web server using Python Flask and install MySQL
+              # Script to deploy Apache HTTP Server, clone a GitHub repository, and install MySQL
 
-              # Install Python Flask
-              sudo yum install -y python3-pip
-              pip3 install flask
+              # Install Apache HTTP Server
+              sudo dnf install httpd -y
+              sudo systemctl start httpd
+              sudo systemctl enable httpd
 
-              # Create the Flask web server script
-              cat > /home/ec2-user/color_webserver.py << 'EOL'
-              from flask import Flask
-              import random
+              # Clone the GitHub repository
+              sudo git clone https://github.com/prasadDPR/website.git /var/www/html/
 
-              app = Flask(__name__)
+              # Set permissions if needed
+              sudo chown -R apache:apache /var/www/html/
 
-              @app.route('/')
-              def get_color():
-                  colors = ['red', 'green', 'blue']
-                  return f'<h1 style="color:{random.choice(colors)}">Highly Available Three-Tier Architecture in AWS using Terraform: Designed and Implemented by Prasad</h1>'
-
-              if __name__ == '__main__':
-                  app.run(host='0.0.0.0', port=80)
-              EOL
-
-              # Run the Flask web server
-              nohup python3 /home/ec2-user/color_webserver.py &
+              # Restart Apache to apply changes
+              sudo systemctl restart httpd
 
               # Download the MySQL repository package
               wget https://dev.mysql.com/get/mysql80-community-release-el9-5.noarch.rpm

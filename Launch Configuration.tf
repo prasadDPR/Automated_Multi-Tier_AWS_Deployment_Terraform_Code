@@ -7,24 +7,19 @@ resource "aws_launch_configuration" "private_lc" {
 
   user_data = <<-EOF
               #!/bin/bash
-              # Script to deploy Apache HTTP Server, clone a GitHub repository, and install MySQL
-
-              # Install Apache HTTP Server
-              sudo dnf install httpd -y
-              sudo systemctl start httpd
-              sudo systemctl enable httpd
+              # Script to clone the website repository from GitHub and install MySQL
 
               # Install git
               sudo yum install -y git
 
-              # Clone the GitHub repository
-              git clone https://github.com/prasadDPR/website.git /var/www/html/
+              # Clone the website repository
+              git clone https://github.com/prasadDPR/website.git /home/ec2-user/website
 
-              # Set permissions if needed
-              sudo chown -R apache:apache /var/www/html/
-
-              # Restart Apache to apply changes
-              sudo systemctl restart httpd
+              # Change to the website directory
+              cd /home/ec2-user/website
+              
+              # Example: If your website requires specific setup commands, add them here
+              # ./setup.sh
 
               # Download the MySQL repository package
               wget https://dev.mysql.com/get/mysql80-community-release-el9-5.noarch.rpm
